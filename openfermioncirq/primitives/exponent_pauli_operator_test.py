@@ -46,6 +46,17 @@ class ExponentPauliOperatorTest(unittest.TestCase):
             cirq.Circuit(trotter_qubitoperator_exponent(op1 + op2, qubit_list,
                                                         param_list))
 
+    def test_identity_circuit(self):
+        """Test exponent with 0 coefficient generates Identity."""
+        op = QubitOperator('X0 Y1', 1.0)
+        qubit_list = [cirq.LineQubit(q) for q in range(2)]
+
+        circuit = cirq.Circuit(
+            pauli_exponent_to_circuit(op * 0.0, qubit_list, None))
+
+        self.assertTrue(numpy.allclose(numpy.identity(2**len(qubit_list)),
+                                       circuit.unitary()))
+
     def test_unitary_circuit(self):
         """Test circuit matrix and operator are equal."""
         op1 = QubitOperator('X0 X1', numpy.random.rand() * numpy.pi)
