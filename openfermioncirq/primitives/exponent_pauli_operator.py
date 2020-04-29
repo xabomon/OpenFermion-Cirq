@@ -12,7 +12,7 @@
 
 """Exponential of Pauli operators"""
 
-from typing import List, Tuple, Sequence, Optional, Union
+from typing import Generator, Sequence, Optional, Union
 
 import cirq
 import numpy
@@ -31,7 +31,7 @@ def pauli_exponent_to_circuit(
         pauli: QubitOperator,
         qubits: Sequence[cirq.Qid],
         parameter: Optional[Union[sympy.Symbol,
-                                  float]]=None) -> List[cirq.Operation]:
+                                  float]]=None) -> cirq.OP_TREE:
     r"""
     Convert Pauli string to a unitary circuit by exponentiation.
 
