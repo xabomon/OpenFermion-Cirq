@@ -17,11 +17,11 @@ import openfermion
 import cirq
 from openfermion import QubitOperator
 
+import pytest
+
 from openfermioncirq.utils import qubitoperator_to_pauli_sum
 from openfermioncirq.utils.qubitoperator_translator import (
     _qubitoperator_to_pauli_string)
-
-import pytest
 
 
 def test_function_raises():
