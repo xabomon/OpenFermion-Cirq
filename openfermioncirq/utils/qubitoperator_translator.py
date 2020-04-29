@@ -10,13 +10,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""OpenFermion to CIRQ translation functions."""
+"""OpenFermion to Cirq translation functions."""
 
 import cirq
 from openfermion import QubitOperator
 
 
-def qubitoperator_to_pauli_string(qubit_op):
+def _qubitoperator_to_pauli_string(qubit_op: QubitOperator
+                                   ) -> cirq.PauliString:
     """
     Convert QubitOperator to Pauli String.
 
@@ -38,7 +39,7 @@ def qubitoperator_to_pauli_string(qubit_op):
     pauli_string = cirq.PauliString()
     for ind_ops, coeff in qubit_op.terms.items():
 
-        if ind_ops == tuple():
+        if ind_ops == ():
             return pauli_string * coeff
 
         else:
@@ -55,7 +56,8 @@ def qubitoperator_to_pauli_string(qubit_op):
     return pauli_string * coeff
 
 
-def qubitoperator_to_pauli_sum(qubit_op):
+def qubitoperator_to_pauli_sum(qubit_op: QubitOperator
+                               ) -> cirq.PauliSum:
     """
     Convert QubitOperator to PauliSum object.
 
@@ -73,6 +75,6 @@ def qubitoperator_to_pauli_sum(qubit_op):
 
     pauli_sum = cirq.PauliSum()
     for pauli in qubit_op:
-        pauli_sum += qubitoperator_to_pauli_string(pauli)
+        pauli_sum += _qubitoperator_to_pauli_string(pauli)
 
     return pauli_sum
