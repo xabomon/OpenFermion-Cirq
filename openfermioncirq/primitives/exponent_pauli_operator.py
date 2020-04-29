@@ -12,13 +12,13 @@
 
 """Exponential of Pauli operators"""
 
-from typing import List, Tuple, Sequence, Optional
+from typing import List, Tuple, Sequence, Optional, Union
 
 import cirq
 import numpy
+import sympy
 
 from openfermion import QubitOperator
-import sympy
 
 # Dictionary of single qubit pre-rotaitons.
 
@@ -30,7 +30,8 @@ rot_dic = {'X': lambda q, s: cirq.ry(s * numpy.pi / 2)(q),
 def pauli_exponent_to_circuit(
         pauli: QubitOperator,
         qubits: Sequence[cirq.Qid],
-        parameter: None) -> List[cirq.Operation]:
+        parameter: Optional[Union[sympy.Symbol,
+                                  float]]=None) -> List[cirq.Operation]:
     r"""
     Convert Pauli string to a unitary circuit by exponentiation.
 
@@ -52,9 +53,11 @@ def pauli_exponent_to_circuit(
         ValueError: if Pauli operator is single-qubit.
 
     Notes:
-        Parameters can be a list of sympy.Symbols or a numerical value.
-        The sign of the Pauli operator is kept to multiply the parameter.
-        When no parameter passed the coefficient of QubitOperator is used.
+        Parameter can be a sympy.Symbol, float or nothing.
+        If nothing the coefficient from the QubitOperator is used.
+        If sympy.Symbol the sign of the coefficient of QubitOperator
+        is used.
+        If parameter is a numerical value then it is used as is.
     """
     if not isinstance(pauli, QubitOperator):
         raise TypeError('Pauli must be a QubitOperator object.')
@@ -66,7 +69,7 @@ def pauli_exponent_to_circuit(
             'Pauli operator is single qubit use rotations instead.')
     if parameter is None:
         parameter = list(pauli.terms.values())[0]
-    else:
+    elif isinstance(parameter, sympy.Symbol):
         parameter = numpy.sign(list(pauli.terms.values())[0]) * parameter
 
     for qbt, pau in zip(qbts, paus):

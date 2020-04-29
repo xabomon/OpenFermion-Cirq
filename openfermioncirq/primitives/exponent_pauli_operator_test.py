@@ -15,6 +15,7 @@
 import cirq
 import numpy
 import scipy
+import sympy
 from openfermion import QubitOperator, get_sparse_operator
 
 import pytest
@@ -27,7 +28,6 @@ def test_function_raise():
     op1 = QubitOperator('X0', 1.0)
     op2 = QubitOperator('X0 Y1', numpy.pi / 2)
     qubit_list = [cirq.LineQubit(q) for q in range(4)]
-    param_list = [0.0]
 
     with pytest.raises(TypeError):
         cirq.Circuit(pauli_exponent_to_circuit(1.0, qubit_list, None))
@@ -61,3 +61,22 @@ def test_unitary_circuit():
                                                      qubit_list, None))
     numpy.testing.assert_allclose(op1mat.toarray(), circuit.unitary(),
                                   rtol=1e-7, atol=1e-7)
+
+
+@pytest.mark.parametrize(
+    'operator, parameter',
+    [(QubitOperator('X0 Y1 Y2 X3', -1.0), sympy.Symbol('theta')),
+     (QubitOperator('X0 Y1 Y2 X3', -1.0), 0.5)])
+def test_parameter_handling(operator, parameter):
+    """Test correct handling parameter."""
+    qubit_list = [cirq.LineQubit(q) for q in range(4)]
+    circuit = cirq.Circuit(pauli_exponent_to_circuit(operator,
+                                                     qubit_list, parameter))
+    if isinstance(parameter, sympy.Symbol):
+        with pytest.raises(TypeError):
+            circuit.unitary()
+    else:
+        opmat = scipy.linalg.expm(0.5j * parameter *
+                                  get_sparse_operator(operator, 4))
+        numpy.testing.assert_allclose(opmat.toarray(), circuit.unitary(),
+                                      rtol=1e-7, atol=1e-7)
