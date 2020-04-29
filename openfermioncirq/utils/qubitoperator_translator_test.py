@@ -35,6 +35,14 @@ def test_function_raises():
         qubitoperator_to_pauli_sum([5.0])
 
 
+def test_identity():
+    """Test correct hanlding of Identity."""
+    pau_from_qop = _qubitoperator_to_pauli_string(QubitOperator(' ', -0.5))
+    pauli_str = cirq.PauliString() * (-0.5)
+
+    assert pauli_str == pau_from_qop
+
+
 @pytest.mark.parametrize(
     'qubitop, state_binary',
     [(QubitOperator('Z0 Z1', -1.0), '00'),
