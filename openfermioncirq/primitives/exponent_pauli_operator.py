@@ -12,7 +12,7 @@
 
 """Exponential of Pauli operators"""
 
-from typing import Generator, Sequence, Optional, Union
+from typing import Sequence, Optional, Union
 
 import cirq
 import numpy
