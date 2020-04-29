@@ -15,7 +15,7 @@
 from openfermioncirq.primitives.bogoliubov_transform import bogoliubov_transform
 
 from openfermioncirq.primitives.exponent_pauli_operator import (
-    pauli_exponent_to_circuit, trotter_qubitoperator_exponent)
+    pauli_exponent_to_circuit)
 
 from openfermioncirq.primitives.ffft import ffft
 

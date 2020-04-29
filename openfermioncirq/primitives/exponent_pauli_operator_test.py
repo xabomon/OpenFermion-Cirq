@@ -12,74 +12,52 @@
 
 """Test function of exponent pauli operator"""
 
-import unittest
-
 import cirq
 import numpy
 import scipy
 from openfermion import QubitOperator, get_sparse_operator
 
-from openfermioncirq.primitives import (pauli_exponent_to_circuit,
-                                        trotter_qubitoperator_exponent)
+import pytest
+
+from openfermioncirq.primitives import (pauli_exponent_to_circuit)
 
 
-class ExponentPauliOperatorTest(unittest.TestCase):
-    """Test class of Exponent Pauli Operator."""
+def test_function_raise():
+    """Test function raises."""
+    op1 = QubitOperator('X0', 1.0)
+    op2 = QubitOperator('X0 Y1', numpy.pi / 2)
+    qubit_list = [cirq.LineQubit(q) for q in range(4)]
+    param_list = [0.0]
 
-    def test_function_raise(self):
-        """Test function raises."""
-        op1 = QubitOperator('X0', 1.0)
-        op2 = QubitOperator('X0 Y1', numpy.pi / 2)
-        qubit_list = [cirq.LineQubit(q) for q in range(4)]
-        param_list = [0.0]
+    with pytest.raises(TypeError):
+        cirq.Circuit(pauli_exponent_to_circuit(1.0, qubit_list, None))
+    with pytest.raises(ValueError):
+        cirq.Circuit(pauli_exponent_to_circuit(
+            op1 + op2, qubit_list, None))
+    with pytest.raises(ValueError):
+        cirq.Circuit(pauli_exponent_to_circuit(op1, qubit_list, None))
 
-        with self.assertRaises(TypeError):
-            cirq.Circuit(pauli_exponent_to_circuit(1.0, qubit_list, None))
-        with self.assertRaises(ValueError):
-            cirq.Circuit(pauli_exponent_to_circuit(
-                op1 + op2, qubit_list, None))
-        with self.assertRaises(ValueError):
-            cirq.Circuit(pauli_exponent_to_circuit(op1, qubit_list, None))
-        with self.assertRaises(TypeError):
-            cirq.Circuit(trotter_qubitoperator_exponent(1.0, qubit_list, None))
-        with self.assertRaises(ValueError):
-            cirq.Circuit(trotter_qubitoperator_exponent(op1 + op2, qubit_list,
-                                                        param_list))
 
-    def test_identity_circuit(self):
-        """Test exponent with 0 coefficient generates Identity."""
-        op = QubitOperator('X0 Y1', 1.0)
-        qubit_list = [cirq.LineQubit(q) for q in range(2)]
+def test_identity_circuit():
+    """Test exponent with 0 coefficient generates Identity."""
+    op = QubitOperator('X0 Y1', 1.0)
+    qubit_list = [cirq.LineQubit(q) for q in range(2)]
 
-        circuit = cirq.Circuit(
-            pauli_exponent_to_circuit(op * 0.0, qubit_list, None))
+    circuit = cirq.Circuit(
+        pauli_exponent_to_circuit(op * 0.0, qubit_list, None))
 
-        self.assertTrue(numpy.allclose(numpy.identity(2**len(qubit_list)),
-                                       circuit.unitary()))
+    numpy.testing.assert_allclose(numpy.identity(2**len(qubit_list)),
+                                  circuit.unitary(),
+                                  rtol=1e-7, atol=1e-7)
 
-    def test_unitary_circuit(self):
-        """Test circuit matrix and operator are equal."""
-        op1 = QubitOperator('X0 X1', numpy.random.rand() * numpy.pi)
-        op1mat = scipy.linalg.expm(-0.5j * get_sparse_operator(op1, 2))
-        qubit_list = [cirq.LineQubit(q) for q in range(4)]
 
-        circuit = cirq.Circuit(pauli_exponent_to_circuit(op1,
-                                                         qubit_list, None))
-        self.assertTrue(numpy.allclose(op1mat.toarray(), circuit.unitary()))
+def test_unitary_circuit():
+    """Test circuit matrix and operator are equal."""
+    op1 = QubitOperator('X0 X1', numpy.random.rand() * numpy.pi)
+    op1mat = scipy.linalg.expm(-0.5j * get_sparse_operator(op1, 2))
+    qubit_list = [cirq.LineQubit(q) for q in range(4)]
 
-    def test_unitary_circuit_multiple_paulis(self):
-        """Test matrix with multiple Pauli operators."""
-        op2 = (QubitOperator('X0 X1', 0.5) +
-               QubitOperator('Z0 Z1 Y2 Y3', numpy.pi) +
-               QubitOperator('X0 Y1 Y2 X3', numpy.pi / 2) +
-               QubitOperator('Z0 X1 X2 Y3', -1 * numpy.pi / 2))
-        op2mat = numpy.identity(2**4)
-
-        qubit_list = [cirq.LineQubit(q) for q in range(4)]
-
-        circuit = cirq.Circuit(
-            trotter_qubitoperator_exponent(op2, qubit_list, None))
-        for op in reversed(list(op2)):
-            op2mat *= scipy.linalg.expm(-0.5j * get_sparse_operator(op, 4))
-
-        self.assertTrue(numpy.allclose(op2mat, circuit.unitary()))
+    circuit = cirq.Circuit(pauli_exponent_to_circuit(op1,
+                                                     qubit_list, None))
+    numpy.testing.assert_allclose(op1mat.toarray(), circuit.unitary(),
+                                  rtol=1e-7, atol=1e-7)
