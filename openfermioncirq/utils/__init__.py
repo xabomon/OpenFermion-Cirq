@@ -10,7 +10,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Util functions to translate OpenFermion to Cirq."""
-
 from openfermioncirq.utils.qubitoperator_translator import (
     qubitoperator_to_pauli_sum)
