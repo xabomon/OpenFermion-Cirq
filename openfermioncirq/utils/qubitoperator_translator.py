@@ -14,8 +14,7 @@ import cirq
 from openfermion import QubitOperator
 
 
-def _qubitoperator_to_pauli_string(qubit_op: QubitOperator
-                                   ) -> cirq.PauliString:
+def _qubitoperator_to_pauli_string(qubit_op: QubitOperator) -> cirq.PauliString:
     """
     Convert QubitOperator to Pauli String.
 
@@ -54,8 +53,7 @@ def _qubitoperator_to_pauli_string(qubit_op: QubitOperator
     return pauli_string * coeff
 
 
-def qubitoperator_to_pauli_sum(qubit_op: QubitOperator
-                               ) -> cirq.PauliSum:
+def qubitoperator_to_pauli_sum(qubit_op: QubitOperator) -> cirq.PauliSum:
     """
     Convert QubitOperator to PauliSum object.
 

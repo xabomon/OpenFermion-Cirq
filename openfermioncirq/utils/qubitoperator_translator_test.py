@@ -10,8 +10,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Test qubitoperator translator."""
-
 import numpy
 import openfermion
 import cirq
@@ -43,11 +41,9 @@ def test_identity():
     assert pauli_str == pau_from_qop
 
 
-@pytest.mark.parametrize(
-    'qubitop, state_binary',
-    [(QubitOperator('Z0 Z1', -1.0), '00'),
-     (QubitOperator('X0 Y1', 1.0), '10')
-     ])
+@pytest.mark.parametrize('qubitop, state_binary',
+                         [(QubitOperator('Z0 Z1', -1.0), '00'),
+                          (QubitOperator('X0 Y1', 1.0), '10')])
 def test_expectation_values(qubitop, state_binary):
     """Test PauliSum and QubitOperator expectation value."""
     n_qubits = openfermion.count_qubits(qubitop)
@@ -66,11 +62,9 @@ def test_expectation_values(qubitop, state_binary):
 
 @pytest.mark.parametrize(
     'qubitop, state_binary',
-    [(QubitOperator('Z0 Z1 Z2 Z3', -1.0) +
-      QubitOperator('X0 Y1 Y2 X3', 1.0), '1100'),
-     (QubitOperator('X0 X3', -1.0) +
-      QubitOperator('Y1 Y2', 1.0), '0000')
-     ])
+    [(QubitOperator('Z0 Z1 Z2 Z3', -1.0) + QubitOperator('X0 Y1 Y2 X3', 1.0),
+      '1100'),
+     (QubitOperator('X0 X3', -1.0) + QubitOperator('Y1 Y2', 1.0), '0000')])
 def test_expectation_values_paulisum(qubitop, state_binary):
     """Test PauliSum and QubitOperator expectation value."""
     n_qubits = openfermion.count_qubits(qubitop)
