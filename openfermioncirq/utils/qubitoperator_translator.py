@@ -13,13 +13,10 @@
 import cirq
 from openfermion import QubitOperator
 
-rotation_dict = {'X': cirq.X,
-                 'Y': cirq.Y,
-                 'Z': cirq.Z}
+rotation_dict = {'X': cirq.X, 'Y': cirq.Y, 'Z': cirq.Z}
 
 
-def _qubitoperator_to_pauli_string(
-        qubit_op: QubitOperator) -> cirq.PauliString:
+def _qubitoperator_to_pauli_string(qubit_op: QubitOperator) -> cirq.PauliString:
     """
     Convert QubitOperator to Pauli String.
 
