@@ -13,8 +13,13 @@
 import cirq
 from openfermion import QubitOperator
 
+rotation_dict = {'X': cirq.X,
+                 'Y': cirq.Y,
+                 'Z': cirq.Z}
 
-def _qubitoperator_to_pauli_string(qubit_op: QubitOperator) -> cirq.PauliString:
+
+def _qubitoperator_to_pauli_string(
+        qubit_op: QubitOperator) -> cirq.PauliString:
     """
     Convert QubitOperator to Pauli String.
 
@@ -34,21 +39,15 @@ def _qubitoperator_to_pauli_string(qubit_op: QubitOperator) -> cirq.PauliString:
         raise ValueError('Input has more than one Pauli string.')
 
     pauli_string = cirq.PauliString()
-    for ind_ops, coeff in qubit_op.terms.items():
+    ind_ops, coeff = next(iter(qubit_op.terms.items()))
 
-        if ind_ops == ():
-            return pauli_string * coeff
+    if ind_ops == ():
+        return pauli_string * coeff
 
-        else:
-            for ind, op in ind_ops:
-                if op == 'X':
-                    op = cirq.X
-                elif op == 'Y':
-                    op = cirq.Y
-                elif op == 'Z':
-                    op = cirq.Z
+    else:
+        for ind, op in ind_ops:
 
-                pauli_string *= op(cirq.LineQubit(ind))
+            pauli_string *= rotation_dict[op](cirq.LineQubit(ind))
 
     return pauli_string * coeff
 
