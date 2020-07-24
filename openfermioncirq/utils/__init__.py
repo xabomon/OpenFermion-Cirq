@@ -11,4 +11,4 @@
 # limitations under the License.
 
 from openfermioncirq.utils.qubitoperator_translator import (
-    qubitoperator_to_pauli_sum)
+    qubit_operator_to_pauli_sum)

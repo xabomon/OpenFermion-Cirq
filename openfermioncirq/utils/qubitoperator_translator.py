@@ -10,51 +10,39 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from typing import Optional, Sequence
 import cirq
-from openfermion import QubitOperator
-
-rotation_dict = {'X': cirq.X, 'Y': cirq.Y, 'Z': cirq.Z}
+from openfermion import QubitOperator, count_qubits
 
 
-def _qubitoperator_to_pauli_string(qubit_op: QubitOperator) -> cirq.PauliString:
+def _qubit_operator_term_to_pauli_string(
+        term: dict,
+        qubits: Sequence[cirq.Qid]) -> cirq.PauliString:
     """
-    Convert QubitOperator to Pauli String.
+    Convert term of QubitOperator to a PauliString.
 
     Args:
-        qubit_op (QubitOperator): operator to convert.
-
+        term (dict): QubitOperator term.
+        qubits (list): List of qubit names.
     Returns:
         pauli_string (PauliString): cirq PauliString object.
-
-    Raises:
-        TypeError: if qubit_op is not a QubitOpertor.
-        ValueError: if qubit_op has more than one Pauli string.
     """
-    if not isinstance(qubit_op, QubitOperator):
-        raise TypeError('Input must be a QubitOperator.')
-    if len(qubit_op.terms) > 1:
-        raise ValueError('Input has more than one Pauli string.')
+    ind_ops, coeff = term
 
-    pauli_string = cirq.PauliString()
-    ind_ops, coeff = next(iter(qubit_op.terms.items()))
-
-    if ind_ops == ():
-        return pauli_string * coeff
-
-    else:
-        for ind, op in ind_ops:
-
-            pauli_string *= rotation_dict[op](cirq.LineQubit(ind))
-
-    return pauli_string * coeff
+    return cirq.PauliString(
+        dict((qubits[ind], op) for ind, op in ind_ops),
+        coeff)
 
 
-def qubitoperator_to_pauli_sum(qubit_op: QubitOperator) -> cirq.PauliSum:
+def qubit_operator_to_pauli_sum(operator: QubitOperator,
+                                qubits: Optional[Sequence[cirq.Qid]] = None
+                                ) -> cirq.PauliSum:
     """
-    Convert QubitOperator to PauliSum object.
+    Convert QubitOperator to a sum of PauliString.
 
     Args:
-        qubit_op (QubitOperator): operator to convert.
+        operator (QubitOperator): operator to convert.
+        qubits (List): Optional list of qubit names.
 
     Returns:
         pauli_sum (PauliSum): cirq PauliSum object.
@@ -62,11 +50,14 @@ def qubitoperator_to_pauli_sum(qubit_op: QubitOperator) -> cirq.PauliSum:
     Raises:
         TypeError: if qubit_op is not a QubitOpertor.
     """
-    if not isinstance(qubit_op, QubitOperator):
+    if not isinstance(operator, QubitOperator):
         raise TypeError('Input must be a QubitOperator.')
 
+    if qubits is None:
+        qubits = cirq.LineQubit.range(count_qubits(operator))
+
     pauli_sum = cirq.PauliSum()
-    for pauli in qubit_op:
-        pauli_sum += _qubitoperator_to_pauli_string(pauli)
+    for pauli in operator.terms.items():
+        pauli_sum += _qubit_operator_term_to_pauli_string(pauli, qubits)
 
     return pauli_sum
