@@ -27,9 +27,17 @@ def test_function_raises():
     operator = QubitOperator('X0 X1 X2 X3', 1.0)
     with pytest.raises(TypeError):
         _qubit_operator_term_to_pauli_string(
-            list(operator.terms.items())[0])
+            list(operator.terms.items())[0], qubits=0.0)
     with pytest.raises(TypeError):
         qubit_operator_to_pauli_sum([5.0])
+
+
+def test_pauli_sum_qubits():
+    """Test PauliSum creates qubits."""
+    operator = QubitOperator('X0 X1 X2 X3', 1.0)
+    pauli_sum = qubit_operator_to_pauli_sum(operator=operator)
+
+    assert list(pauli_sum.qubits) == (cirq.LineQubit.range(4))
 
 
 def test_identity():
@@ -47,7 +55,7 @@ def test_identity():
                          [(QubitOperator('Z0 Z1', -1.0), '00'),
                           (QubitOperator('X0 Y1', 1.0), '10')])
 def test_expectation_values(qubitop, state_binary):
-    """Test PauliSum and QubitOperator expectation value."""
+    """Test PauliSum and QubitOperator expectation value.""git "
     n_qubits = openfermion.count_qubits(qubitop)
     state = numpy.zeros(2**n_qubits, dtype='complex64')
     state[int(state_binary, 2)] = 1.0
