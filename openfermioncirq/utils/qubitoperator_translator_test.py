@@ -55,7 +55,7 @@ def test_identity():
                          [(QubitOperator('Z0 Z1', -1.0), '00'),
                           (QubitOperator('X0 Y1', 1.0), '10')])
 def test_expectation_values(qubitop, state_binary):
-    """Test PauliSum and QubitOperator expectation value.""git "
+    """Test PauliSum and QubitOperator expectation value."""
     n_qubits = openfermion.count_qubits(qubitop)
     state = numpy.zeros(2**n_qubits, dtype='complex64')
     state[int(state_binary, 2)] = 1.0
