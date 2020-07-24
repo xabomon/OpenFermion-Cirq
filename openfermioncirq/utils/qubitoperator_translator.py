@@ -16,7 +16,7 @@ from openfermion import QubitOperator, count_qubits
 
 
 def _qubit_operator_term_to_pauli_string(term: dict, qubits: Sequence[cirq.Qid]
-                                         ) -> cirq.PauliString:
+                                        ) -> cirq.PauliString:
     """
     Convert term of QubitOperator to a PauliString.
 
@@ -34,7 +34,7 @@ def _qubit_operator_term_to_pauli_string(term: dict, qubits: Sequence[cirq.Qid]
 
 def qubit_operator_to_pauli_sum(operator: QubitOperator,
                                 qubits: Optional[Sequence[cirq.Qid]] = None
-                                ) -> cirq.PauliSum:
+                               ) -> cirq.PauliSum:
     """
     Convert QubitOperator to a sum of PauliString.
 

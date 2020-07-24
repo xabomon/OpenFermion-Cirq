@@ -26,8 +26,8 @@ def test_function_raises():
     """Test function raises."""
     operator = QubitOperator('X0 X1 X2 X3', 1.0)
     with pytest.raises(TypeError):
-        _qubit_operator_term_to_pauli_string(
-            list(operator.terms.items())[0], qubits=0.0)
+        _qubit_operator_term_to_pauli_string(list(operator.terms.items())[0],
+                                             qubits=0.0)
     with pytest.raises(TypeError):
         qubit_operator_to_pauli_sum([5.0])
 
@@ -44,8 +44,7 @@ def test_identity():
     """Test correct hanlding of Identity."""
     identity_op = QubitOperator(' ', -0.5)
     pau_from_qop = _qubit_operator_term_to_pauli_string(
-        term=list(identity_op.terms.items())[0],
-        qubits=cirq.LineQubit.range(2))
+        term=list(identity_op.terms.items())[0], qubits=cirq.LineQubit.range(2))
     pauli_str = cirq.PauliString() * (-0.5)
 
     assert pauli_str == pau_from_qop
@@ -84,8 +83,7 @@ def test_expectation_values_paulisum(qubitop, state_binary):
     state[int(state_binary, 2)] = 1.0
     qubit_map = {cirq.LineQubit(i): i for i in range(n_qubits)}
 
-    pauli_str = qubit_operator_to_pauli_sum(qubitop,
-                                            list(qubit_map.keys()))
+    pauli_str = qubit_operator_to_pauli_sum(qubitop, list(qubit_map.keys()))
     op_mat = openfermion.get_sparse_operator(qubitop, n_qubits)
 
     expct_qop = openfermion.expectation(op_mat, state)
